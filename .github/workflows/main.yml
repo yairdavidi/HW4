@@ -1,0 +1,958 @@
+name: Ex4 - Encryption
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build-pipeline-tools:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      ## Ignore building executable files that are already in cache ##
+          
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: |
+            filesverifier
+            valgrindverifier
+            clearscreen
+            printMessage
+            printbanner
+            CodesToMessages.csv
+          key: ${{ runner.os }}-test-files
+        
+      - name: Build utils
+        if: steps.cache.outputs.cache-hit != 'true' 
+        run: |
+          git clone https://$GH_PAT@github.com/Cyber-Education-Center/ExerciseTests-Utils.git/ utils
+          cd utils
+          g++ clearscreen.cpp -o clearscreen
+          g++ printbanner.cpp -o printbanner 
+          g++ printMessage.cpp -o printMessage
+          chmod +x clearscreen
+          chmod +x printbanner
+          chmod +x printMessage
+          
+          mv clearscreen ..
+          mv printbanner ..
+          mv printMessage ..
+          mv CodesToMessages.csv ..
+          cd ..
+        env:
+          GH_PAT: ${{ secrets.GIT_TOKEN }}
+          
+      - name: Build files verifier
+        if: steps.cache.outputs.cache-hit != 'true' 
+        run: |  
+          git clone https://$GH_PAT@github.com/Cyber-Education-Center/ExerciseTests-VerifySubmittedFiles.git/ verifysubmittedfiles
+          cd verifysubmittedfiles
+          go build .
+          chmod +x filesverifier
+          mv filesverifier ..
+          cd ..
+        env:
+          GH_PAT: ${{ secrets.GIT_TOKEN }}
+  
+      - name: Build memory verifier 
+        if: steps.cache.outputs.cache-hit != 'true'  
+        run: |
+          git clone https://$GH_PAT@github.com/Cyber-Education-Center/ExerciseTests-ValgrindVarifier.git/ valgrindvarifier
+          cd valgrindvarifier
+          g++ ValgrindVarifier.cpp -o valgrindverifier
+          chmod +x valgrindverifier
+          mv valgrindverifier ..
+          cd ..
+        env:
+          GH_PAT: ${{ secrets.GIT_TOKEN }}
+  
+      - name: Clone exercise test repo
+        run: |
+          sudo apt-get install tree
+          mkdir checkers
+          git clone https://$GH_PAT@github.com/Cyber-Education-Center/ExerciseTests-Ex04.git/ ex4
+          cd ex4
+          mv PreSubmissionChecker.txt ../checkers
+          mv PostSubmissionChecker.txt ../checkers
+          mv Part1AChecker.txt ../checkers
+          mv Part1BChecker.txt ../checkers
+          mv Part2Checker.txt ../checkers
+          mv Part3Checker.txt ../checkers
+          mv Part4Checker.txt ../checkers
+          mv BonusChecker.txt ../checkers
+          mv Ex4Part1ATest.cpp ../checkers
+          mv Ex4Part1BTest.cpp ../checkers
+          mv Ex4Part2Test.cpp ../checkers
+          mv Ex4Part3Test.cpp ../checkers
+          mv Ex4Part4Test.cpp ../checkers
+          mv Ex4BonusTest.cpp ../checkers
+          mv dictionary.csv ../checkers
+          mv example.txt ../checkers
+          mv expected.txt ../checkers
+          cd ..
+        env:
+          GH_PAT: ${{ secrets.GIT_TOKEN }}
+
+      ## This step stores the executable files in cache ##
+      
+      - name: Cache compiled files
+        if: steps.cache.outputs.cache-hit != 'true' 
+        uses: actions/cache@v3
+        with:
+          path: |
+            filesverifier
+            valgrindverifier
+            clearscreen
+            printMessage
+            printbanner
+            CodesToMessages.csv
+          key: ${{ runner.os }}-test-files
+          
+      - uses: actions/upload-artifact@v3
+        with:
+          name: pipeline-tools
+          path: checkers
+            
+  verify-submission:
+
+    needs: build-pipeline-tools
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: pipeline-tools
+    
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+         
+    - name: Verify submission
+      run: |  
+        echo "Verifying .gitignore..."
+        ./filesverifier PreSubmissionChecker.txt 5
+        echo "Gitignore files exists"
+        echo "Verifying required VS files..."
+        ./filesverifier PreSubmissionChecker.txt 2
+        echo "Required VS files ok"
+        echo "Verifying files that should not be submitted..."
+        ./filesverifier PreSubmissionChecker.txt 4
+        echo "Excluded files ok"
+
+  verify-files:
+
+    needs: build-pipeline-tools  
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: pipeline-tools
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Verify files
+      run: |
+        ./clearscreen 50  
+        ./printbanner
+        ./filesverifier PostSubmissionChecker.txt 1
+
+  compile-part1a:
+
+    needs: build-pipeline-tools
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: pipeline-tools
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Verify files
+      run: | 
+        ./clearscreen 50
+        ./printbanner
+        echo "Verifying part1a files exist..."
+        ./filesverifier Part1AChecker.txt 1
+        echo "Part 1a - ShiftText and CaesarText --- files ok"
+    
+    - name: Compile 
+      run: |
+        echo "Compiling ..."
+        cd temp123
+        cp -avf . ../
+        cd ..
+        mkdir test
+        g++ PlainText.cpp ShiftText.cpp CaesarText.cpp Ex4Part1ATest.cpp -o exec1a
+        mv exec1a test
+        echo "Ex4 Part 1a compiled successfully"
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: exec1a-test
+        path: test
+      
+        
+  test-part1a:
+    needs: [compile-part1a]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec1a-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+
+
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec1a
+        
+    - name: בדיקה ראשונה
+      run: |
+        ./printbanner
+        ./exec1a
+
+  test-part1a-memcheck:
+    needs: [test-part1a]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec1a-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec1a
+        
+    - name: בדיקת זיכרון ראשונה
+      run: |
+        sudo apt-get install valgrind
+        ./clearscreen 50  
+        ./printbanner
+        echo "Looking for memory leaks..."
+        valgrind --leak-check=yes --log-file=valgrind-out.txt ./exec1a
+        ./valgrindverifier valgrind-out.txt
+
+  compile-part1b:
+
+    needs: build-pipeline-tools
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: pipeline-tools
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Verify files
+      run: |
+        ./clearscreen 50
+        ./printbanner
+        echo "Verifying part1b files exist..."
+        ./filesverifier Part1BChecker.txt 1
+        echo "Part 1b - SubstitutionText --- files ok"
+    
+    - name: Compile 
+      run: |
+        echo "Compiling ..."
+        cd temp123
+        cp -avf . ../
+        cd ..
+        mkdir test
+        g++ PlainText.cpp SubstitutionText.cpp Ex4Part1BTest.cpp -o exec1b
+        mv exec1b test
+        echo "Ex4 Part 1b compiled successfully"
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: exec1b-test
+        path: test
+      
+        
+  test-part1b:
+    needs: [compile-part1b]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec1b-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+
+
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec1b
+        
+    - name: בדיקה ראשונה
+      run: |
+        curl -o dictionary.csv https://gist.githubusercontent.com/cybereducenter/bde211ba3ff039cef8f8e51ce8d91648/raw/781005f2043f7d25216e1ebbcb6fd060205610d4/dictionary.csv        
+        ./printbanner
+        ./exec1b
+
+  test-part1b-memcheck:
+    needs: [test-part1b]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec1b-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec1b
+        
+    - name: בדיקת זיכרון ראשונה
+      run: |
+        curl -o dictionary.csv https://gist.githubusercontent.com/cybereducenter/bde211ba3ff039cef8f8e51ce8d91648/raw/781005f2043f7d25216e1ebbcb6fd060205610d4/dictionary.csv
+        sudo apt-get install valgrind
+        ./clearscreen 50  
+        ./printbanner
+        echo "Looking for memory leaks..."
+        valgrind --leak-check=yes --log-file=valgrind-out.txt ./exec1b
+        ./valgrindverifier valgrind-out.txt
+
+  compile-part2:
+
+    needs: build-pipeline-tools
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: pipeline-tools
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Verify files
+      run: | 
+        ./clearscreen 50
+        ./printbanner
+        echo "Verifying part2 files exist..."
+        ./filesverifier Part2Checker.txt 1
+        echo "Part 2 - Static fields and methods --- files ok"
+    
+    - name: Compile 
+      run: |
+        echo "Compiling ..."
+        cd temp123
+        cp -avf . ../
+        cd ..
+        mkdir test
+        g++ PlainText.cpp ShiftText.cpp CaesarText.cpp SubstitutionText.cpp Ex4Part2Test.cpp -o exec2
+        mv exec2 test
+        echo "Ex4 Part 2 compiled successfully"
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: exec2-test
+        path: test
+      
+        
+  test-part2:
+    needs: [compile-part2]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec2-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec2
+        
+    - name: בדיקה שנייה
+      run: |
+        curl -o dictionary.csv https://gist.githubusercontent.com/cybereducenter/bde211ba3ff039cef8f8e51ce8d91648/raw/781005f2043f7d25216e1ebbcb6fd060205610d4/dictionary.csv
+        ./printbanner
+        ./exec2
+
+  test-part2-memcheck:
+    needs: [test-part2]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec2-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec2
+        
+    - name: בדיקת זיכרון שנייה
+      run: |
+        curl -o dictionary.csv https://gist.githubusercontent.com/cybereducenter/bde211ba3ff039cef8f8e51ce8d91648/raw/781005f2043f7d25216e1ebbcb6fd060205610d4/dictionary.csv        
+        sudo apt-get install valgrind
+        ./clearscreen 50  
+        ./printbanner
+        echo "Looking for memory leaks..."
+        valgrind --leak-check=yes --log-file=valgrind-out.txt ./exec2
+        ./valgrindverifier valgrind-out.txt
+  
+  compile-part3:
+
+    needs: build-pipeline-tools
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: pipeline-tools
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Verify files
+      run: | 
+        ./clearscreen 50
+        ./printbanner
+        echo "Verifying part3 files exist..."
+        ./filesverifier Part3Checker.txt 1
+        echo "Part 3 - Files --- files ok"
+    
+    - name: Compile 
+      run: |
+        echo "Compiling ..."
+        cd temp123
+        cp -avf . ../
+        cd ..
+        mkdir test
+        g++ FileHelper.cpp Ex4Part3Test.cpp -o exec3
+        mv exec3 test
+        echo "Ex4 Part 3 compiled successfully"
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: exec3-test
+        path: test
+      
+        
+  test-part3:
+    needs: [compile-part3]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec3-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec3
+        
+    - name: בדיקה שלישית
+      run: |
+        curl -o expected.txt https://gist.githubusercontent.com/cybereducenter/bde211ba3ff039cef8f8e51ce8d91648/raw/781005f2043f7d25216e1ebbcb6fd060205610d4/ex04_expected.txt
+        ./printbanner
+        ./exec3
+
+  test-part3-memcheck:
+    needs: [test-part3]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec3-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec3
+        
+    - name: בדיקת זיכרון שלישית
+      run: |
+        curl -o expected.txt https://gist.githubusercontent.com/cybereducenter/bde211ba3ff039cef8f8e51ce8d91648/raw/781005f2043f7d25216e1ebbcb6fd060205610d4/ex04_expected.txt
+        sudo apt-get install valgrind
+        ./clearscreen 50  
+        ./printbanner
+        echo "Looking for memory leaks..."
+        valgrind --leak-check=yes --log-file=valgrind-out.txt ./exec3
+        ./valgrindverifier valgrind-out.txt
+
+
+  compile-part4:
+
+    needs: build-pipeline-tools
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: pipeline-tools
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Verify files
+      run: | 
+        ./clearscreen 50
+        ./printbanner
+        echo "Verifying part4 files exist..."
+        ./filesverifier Part4Checker.txt 1
+        echo "Part 4 - Operator << --- files ok"
+    
+    - name: Compile 
+      run: |
+        echo "Compiling ..."
+        cd temp123
+        cp -avf . ../
+        cd ..
+        mkdir test
+        g++ PlainText.cpp ShiftText.cpp CaesarText.cpp SubstitutionText.cpp Ex4Part4Test.cpp -o exec4       
+        mv exec4 test
+        echo "Ex4 Part 4 compiled successfully"
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: exec4-test
+        path: test
+      
+        
+  test-part4:
+    needs: [compile-part4]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec4-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+        
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec4
+        
+    - name: בדיקה רביעית
+      run: |
+        ./printbanner
+        ./exec4 4
+  
+        
+  test-part4-memcheck:
+    needs: [test-part4]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: exec4-test
+
+    - name: Restore cloned files
+      uses: actions/cache@v3
+      with:  
+        path: |
+          filesverifier
+          valgrindverifier
+          clearscreen
+          printMessage
+          printbanner
+          CodesToMessages.csv
+        key: ${{ runner.os }}-test-files 
+        restore-keys: |
+          ${{ runner.os }}-test-files 
+
+    - name: Change Test Permissions
+      run: |        
+        chmod +x exec4
+        
+    - name: בדיקת זיכרון רביעית
+      run: |
+        sudo apt-get install valgrind
+        ./clearscreen 50  
+        ./printbanner
+        echo "Looking for memory leaks..."
+        valgrind --leak-check=yes --log-file=valgrind-out.txt ./exec4 4
+        ./valgrindverifier valgrind-out.txt
+
+  # compile-bonus:
+
+  #   needs: build-pipeline-tools
+  #   runs-on: ubuntu-latest
+    
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Download artifacts
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: pipeline-tools
+
+  #   - name: Restore cloned files
+  #     uses: actions/cache@v3
+  #     with:  
+  #       path: |
+  #         filesverifier
+  #         valgrindverifier
+  #         clearscreen
+  #         printMessage
+  #         printbanner
+  #         CodesToMessages.csv
+  #       key: ${{ runner.os }}-test-files 
+  #       restore-keys: |
+  #         ${{ runner.os }}-test-files 
+        
+  #   - name: Verify files
+  #     run: | 
+  #       ./clearscreen 50
+  #       ./printbanner
+  #       echo "Verifying bonus files exist..."
+  #       ./filesverifier BonusChecker.txt 1
+  #       echo "Bonus --- files ok"
+    
+  #   - name: Compile 
+  #     run: |
+  #       echo "Compiling ..."
+  #       cd temp123
+  #       cp -avf . ../
+  #       cd ..
+  #       mkdir test
+  #       g++ Vector.cpp Ex3BonusTest.cpp -o execbonus
+  #       mv execbonus test
+  #       echo "Ex3 Bonus compiled successfully"
+
+  #   - uses: actions/upload-artifact@v3
+  #     with:
+  #       name: execbonus-test
+  #       path: test
+      
+        
+  # test-bonus:
+  #   needs: [compile-bonus]
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Download artifacts
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: execbonus-test
+
+  #   - name: Restore cloned files
+  #     uses: actions/cache@v3
+  #     with:  
+  #       path: |
+  #         filesverifier
+  #         valgrindverifier
+  #         clearscreen
+  #         printMessage
+  #         printbanner
+  #         CodesToMessages.csv
+  #       key: ${{ runner.os }}-test-files 
+  #       restore-keys: |
+  #         ${{ runner.os }}-test-files 
+        
+  #   - name: Change Test Permissions
+  #     run: |        
+  #       chmod +x execbonus
+        
+  #   - name: בדיקת בונוס
+  #     run: |
+  #       ./printbanner
+  #       ./execbonus
+
+  # test-bonus-memcheck:
+  #   needs: [test-bonus]
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Download artifacts
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: execbonus-test
+
+  #   - name: Restore cloned files
+  #     uses: actions/cache@v3
+  #     with:  
+  #       path: |
+  #         filesverifier
+  #         valgrindverifier
+  #         clearscreen
+  #         printMessage
+  #         printbanner
+  #         CodesToMessages.csv
+  #       key: ${{ runner.os }}-test-files 
+  #       restore-keys: |
+  #         ${{ runner.os }}-test-files 
+
+  #   - name: Change Test Permissions
+  #     run: |        
+  #       chmod +x execbonus
+        
+  #   - name: בדיקת זיכרון ראשונה
+  #     run: |
+  #       sudo apt-get install valgrind
+  #       ./clearscreen 50  
+  #       ./printbanner
+  #       echo "Looking for memory leaks..."
+  #       valgrind --leak-check=yes --log-file=valgrind-out.txt ./execbonus
+  #       ./valgrindverifier valgrind-out.txt
+
+  zip-and-send:
+
+    needs: [verify-submission, test-part1a, test-part1a-memcheck, test-part1b, test-part1b-memcheck, test-part2, test-part2-memcheck, test-part3, test-part3-memcheck, test-part4, test-part4-memcheck]
+    runs-on: ubuntu-latest
+    continue-on-error: true  # This line allows the job to continue without failing the workflow if it encounters an error
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Get env variables
+      run: |
+        echo "ING_SERVER_URL=$(grep "ING_SERVER_URL=" utils/ING | cut -d '=' -f2)" >> $GITHUB_ENV
+        echo "ZIP_TARGET_SERVER=$(grep "ZIP_TARGET_SERVER=" utils/ING | cut -d '=' -f2)" >> $GITHUB_ENV
+        
+    - name: Zip and send 
+      run: |
+        # zip and send commands
+        curl -X POST -F "file=@loadedFromPipeline.zip" $ING_SERVER_URL/push_project_zip/$CLASS_NAME/$STUDENT_NAME/$PROJECT_NAME/$GITHUB_SHA/$GITHUB_RUN_NUMBER/$MODIFIED_ZIP_TARGET_SERVER
+      if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'ING') }}

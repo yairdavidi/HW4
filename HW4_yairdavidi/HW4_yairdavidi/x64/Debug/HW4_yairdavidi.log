@@ -1,0 +1,4 @@
+﻿  test3static.cpp
+HW4_yairdavidi\x64\Debug\CaesarText.obj : warning LNK4042: object specified more than once; extras ignored
+HW4_yairdavidi\x64\Debug\ShiftText.obj : warning LNK4042: object specified more than once; extras ignored
+  HW4_yairdavidi.vcxproj -> C:\Users\Cyber_User\Desktop\magshimim\year2\C++\week4\HomeWork\Ekronot-Ex04-yairdavidi1\HW4_yairdavidi\x64\Debug\HW4_yairdavidi.exe

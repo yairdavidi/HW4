@@ -1,0 +1,98 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{01D62C6C-264C-44A0-8269-4E3C208DF2B7}|HW4_yairdavidi.vcxproj|C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\test3static.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{01D62C6C-264C-44A0-8269-4E3C208DF2B7}|HW4_yairdavidi.vcxproj|solutionrelative:test3static.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01D62C6C-264C-44A0-8269-4E3C208DF2B7}|HW4_yairdavidi.vcxproj|C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\CaesarText.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{01D62C6C-264C-44A0-8269-4E3C208DF2B7}|HW4_yairdavidi.vcxproj|solutionrelative:CaesarText.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01D62C6C-264C-44A0-8269-4E3C208DF2B7}|HW4_yairdavidi.vcxproj|C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\PlainText.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{01D62C6C-264C-44A0-8269-4E3C208DF2B7}|HW4_yairdavidi.vcxproj|solutionrelative:PlainText.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{01D62C6C-264C-44A0-8269-4E3C208DF2B7}|HW4_yairdavidi.vcxproj|C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\PlainText.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{01D62C6C-264C-44A0-8269-4E3C208DF2B7}|HW4_yairdavidi.vcxproj|solutionrelative:PlainText.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "test3static.cpp",
+              "DocumentMoniker": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\test3static.cpp",
+              "RelativeDocumentMoniker": "test3static.cpp",
+              "ToolTip": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\test3static.cpp",
+              "RelativeToolTip": "test3static.cpp",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-12-01T12:05:28.632Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CaesarText.cpp",
+              "DocumentMoniker": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\CaesarText.cpp",
+              "RelativeDocumentMoniker": "CaesarText.cpp",
+              "ToolTip": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\CaesarText.cpp",
+              "RelativeToolTip": "CaesarText.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-12-01T11:51:40.841Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PlainText.h",
+              "DocumentMoniker": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\PlainText.h",
+              "RelativeDocumentMoniker": "PlainText.h",
+              "ToolTip": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\PlainText.h",
+              "RelativeToolTip": "PlainText.h",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAIwBIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-12-01T11:40:19.781Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PlainText.cpp",
+              "DocumentMoniker": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\PlainText.cpp",
+              "RelativeDocumentMoniker": "PlainText.cpp",
+              "ToolTip": "C:\\Users\\Cyber_User\\Desktop\\magshimim\\year2\\C\u002B\u002B\\week4\\HomeWork\\Ekronot-Ex04-yairdavidi1\\HW4_yairdavidi\\PlainText.cpp",
+              "RelativeToolTip": "PlainText.cpp",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAIwBEAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-12-01T11:40:18.272Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
